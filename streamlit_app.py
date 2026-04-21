@@ -49,6 +49,7 @@ with st.sidebar:
 
 # ---------- helpers ----------
 def moving_average(x, w):
+    w = max(1, min(int(w), len(x)))
     if w <= 1:
         return x
     kernel = np.ones(w) / w
@@ -68,17 +69,23 @@ def train_many(algo, n_runs, n_ep, a, g, e, base_seed, progress_cb):
     return all_returns, last_Q
 
 
-def trace_greedy_path(Q, max_steps=200):
+MAX_GREEDY_STEPS = 200
+
+
+def trace_greedy_path(Q, max_steps=MAX_GREEDY_STEPS):
+    """Greedy rollout from Start. Returns (path, reached_goal)."""
     env = CliffWalkingEnv()
     s = env.reset()
     path = [env.state]
+    reached = False
     for _ in range(max_steps):
         a = int(Q[s].argmax())
         s, _, done = env.step(a)
         path.append(env.state)
         if done:
+            reached = True
             break
-    return path
+    return path, reached
 
 
 ARROWS = ["^", ">", "v", "<"]
@@ -107,7 +114,7 @@ def draw_policy(ax, Q, title):
         y = rows - 1 - r
         ax.text(c + 0.5, y + 0.5, ARROWS[pi[s]], ha="center", va="center", fontsize=12)
 
-    path = trace_greedy_path(Q)
+    path, _ = trace_greedy_path(Q)
     xs = [c + 0.5 for (_, c) in path]
     ys = [rows - 1 - r + 0.5 for (r, _) in path]
     ax.plot(xs, ys, color="#1f77b4", lw=2.0, linestyle="--", alpha=0.8)
@@ -162,10 +169,17 @@ with col1:
     st.subheader("Learning curves")
     fig, ax = plt.subplots(figsize=(7, 4.2))
     colors = {"SARSA": "#17becf", "Q-learning": "#d62728"}
+
+    smoothed_curves = {}
     for name, data in results.items():
         mean = data["returns"].mean(axis=0)
-        ax.plot(moving_average(mean, smooth), color=colors[name], lw=2, label=name)
-    ax.set_ylim(-100, 0)
+        smoothed = moving_average(mean, smooth)
+        smoothed_curves[name] = smoothed
+        ax.plot(smoothed, color=colors[name], lw=2, label=name)
+
+    # auto y-axis: always show 0 at the top; stretch bottom to fit worst curve
+    ymin = min(s.min() for s in smoothed_curves.values())
+    ax.set_ylim(min(-100, ymin * 1.05), 5)
     ax.set_xlabel("Episodes")
     ax.set_ylabel("Sum of rewards per episode")
     ax.set_title(f"α={alpha}, γ={gamma}, ε={epsilon}  ({runs} runs averaged)")
@@ -179,15 +193,18 @@ with col2:
     rows = []
     for name, data in results.items():
         last100 = data["returns"][:, -min(100, episodes):].mean()
-        path_len = len(trace_greedy_path(data["Q"])) - 1
+        path, reached = trace_greedy_path(data["Q"])
+        path_len_display = (len(path) - 1) if reached else f"∞ (did not reach goal in {MAX_GREEDY_STEPS} steps)"
         rows.append({"Algorithm": name,
                      "Last-100 mean reward": f"{last100:+.2f}",
-                     "Greedy path length": path_len})
+                     "Greedy path length": path_len_display})
     st.table(rows)
     st.caption(
         "**Higher** last-100 mean = better online performance. "
         "**Shorter** greedy path ⇒ more optimal under greedy execution "
-        "(but risky in the presence of exploration)."
+        "(but risky in the presence of exploration). "
+        "If the greedy policy fails to reach the goal (loops indefinitely), "
+        "try lowering ε or raising γ."
     )
 
 st.subheader("Final greedy policies")
