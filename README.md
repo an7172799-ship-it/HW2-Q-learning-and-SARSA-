@@ -1,8 +1,27 @@
 # DRL HW2 — Q-learning vs. SARSA on Cliff Walking
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
+
 本專案實作並比較兩種經典時序差分（TD）控制演算法——**Q-learning（Off-policy）** 與 **SARSA（On-policy）**——於經典的 **Cliff Walking** 環境中的學習行為、收斂特性與最終策略差異。
 
 實驗設定對應 Sutton & Barto《Reinforcement Learning: An Introduction》(2nd ed.) 中 Example 6.6 / Figure 6.4。
+
+## Live demo
+
+互動式 demo 部署於 **Streamlit Community Cloud**：可即時調整 α、ε、γ、episodes、runs，並同時比較 Q-learning 與 SARSA 的學習曲線、最終策略與路徑。
+
+部署步驟（首次）：
+1. 登入 <https://share.streamlit.io>（用 GitHub 帳號）。
+2. 點 **Create app** → **Deploy a public app from GitHub**。
+3. 選擇 repo `an7172799-ship-it/HW2-Q-learning-and-SARSA-`、branch `main`、主檔 `streamlit_app.py`。
+4. 按 **Deploy**。之後每次 push 會自動重新部署。
+
+本地執行：
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
 
 ---
 
@@ -13,6 +32,8 @@
 | `cliff_walking.py` | Cliff Walking 環境（4×12 格子世界） |
 | `agents.py` | Q-learning / SARSA 更新邏輯、ε-greedy 策略 |
 | `main.py` | 訓練、繪圖、輸出指標（主入口） |
+| `streamlit_app.py` | Live demo（Streamlit Cloud） |
+| `requirements.txt` | Runtime 相依套件 |
 | `learning_curves.png` | 每回合累積獎勵學習曲線（50 runs 平均） |
 | `stability.png` | 平均 ± 1 標準差（跨 run 的穩定性） |
 | `policies.png` | 兩種方法的貪婪策略與行走路徑 |
