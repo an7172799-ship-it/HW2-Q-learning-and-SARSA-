@@ -1,0 +1,17 @@
+Parameters: alpha=0.5, gamma=1.0, epsilon=0.1, episodes=500, runs=50
+
+Average reward over LAST 100 episodes (higher = better):
+  Sarsa      : mean= -26.42 std=5.08 (across runs)
+  Q-learning : mean= -49.22 std=6.40 (across runs)
+
+Average reward over ALL episodes:
+  Sarsa      : mean= -35.72
+  Q-learning : mean= -55.78
+
+Per-episode standard deviation across runs (mean over all episodes, smaller = more stable):
+  Sarsa      : 31.80
+  Q-learning : 69.73
+
+Greedy path length from Start (s=36) under final Q:
+  Sarsa path length      : 17
+  Q-learning path length : 13
