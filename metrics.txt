@@ -1,5 +1,7 @@
+============================================================
+[sutton] Sutton & Barto Fig. 6.4
 Parameters: alpha=0.5, gamma=1.0, epsilon=0.1, episodes=500, runs=50
-
+============================================================
 Average reward over LAST 100 episodes (higher = better):
   Sarsa      : mean= -26.42 std=5.08 (across runs)
   Q-learning : mean= -49.22 std=6.40 (across runs)
@@ -12,6 +14,27 @@ Per-episode standard deviation across runs (mean over all episodes, smaller = mo
   Sarsa      : 31.80
   Q-learning : 69.73
 
-Greedy path length from Start (s=36) under final Q:
+Greedy path length from Start under final Q:
   Sarsa path length      : 17
   Q-learning path length : 13
+
+============================================================
+[hw] HW spec
+Parameters: alpha=0.1, gamma=0.9, epsilon=0.1, episodes=500, runs=50
+============================================================
+Average reward over LAST 100 episodes (higher = better):
+  Sarsa      : mean= -23.53 std=1.94 (across runs)
+  Q-learning : mean= -49.78 std=7.53 (across runs)
+
+Average reward over ALL episodes:
+  Sarsa      : mean= -51.35
+  Q-learning : mean= -71.93
+
+Per-episode standard deviation across runs (mean over all episodes, smaller = more stable):
+  Sarsa      : 40.02
+  Q-learning : 75.98
+
+Greedy path length from Start under final Q:
+  Sarsa path length      : 17
+  Q-learning path length : 13
+
